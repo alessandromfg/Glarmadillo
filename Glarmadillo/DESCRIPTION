@@ -1,0 +1,27 @@
+Package: Glarmadillo
+Title: Generate Sparse Covariance Matrices and Solve the Graphical Lasso Problem with Armadillo
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Alessandro",
+           family = "Meng",
+           role = c("aut", "cre"),
+           email = "mengfangeng@ruc.edu.cn")
+    )
+Description: Provides an efficient implementation of the Graphical Lasso (GLasso) algorithm, 
+    which employs an L1 penalty term to estimate sparse inverse covariance matrices 
+    from multivariate normal distribution observations. In addition to solving the 
+    GLasso problem, this package includes functionality to generate random sparse 
+    covariance matrices which are useful in simulations and teaching of graphical models.
+    The package leverages the Armadillo C++ library for fast and accurate computations.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    stats, Rcpp, RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo
+Suggests:
+  knitr,
+  rmarkdown
+VignetteBuilder:
+  knitr
