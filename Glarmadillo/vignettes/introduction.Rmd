@@ -1,0 +1,83 @@
+---
+title: "introduction"
+author: "Alessandro"
+date: "2023-12-14"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An Introduction to Glarmadillo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Glarmadillo
+
+`Glarmadillo` is an R package designed for solving the Graphical Lasso (GLasso) problem using the Armadillo library. It provides an efficient implementation for estimating sparse inverse covariance matrices from observed data, ideal for applications in statistical learning and network analysis. The package includes functionality to generate random sparse covariance matrices and specific shape sparse covariance matrices, facilitating simulations, statistical method testing, and educational purposes.
+
+## Installation
+
+To install the latest version of `Glarmadillo` from GitHub, run the following commands in R:
+
+```r
+# Install the devtools package if it's not already installed
+if (!require(devtools)) install.packages("devtools")
+
+# Install the Glarmadillo package from GitHub
+devtools::install_github("alessandromfg/Glarmadillo")
+```
+
+## Usage
+
+Here's an example demonstrating how to generate a sparse covariance matrix, solve the GLasso problem, and find an optimal lambda by sparsity level:
+
+```r
+# Load the Glarmadillo package
+library(Glarmadillo)
+
+# Define the dimension and rank for the covariance matrix
+n <- 160
+p <- 50
+
+# Generate a sparse covariance matrix
+s <- generate_sparse_cov_matrix(n, p, standardize = TRUE, sparse_rho = 0, scale_power = 0)
+
+# Solve the Graphical Lasso problem
+# Set the regularization parameter
+rho <- 0.1
+gl_result <- glarma(s, rho, mtol = 1e-4, maxIterations = 10000, ltol = 1e-6)
+
+# Define a sequence of lambda values for the grid search
+lambda_grid <- c(0.1, 0.2, 0.3, 0.4)
+
+# Perform a grid search to find the lambda value that results in a precision matrix with approximately 80% sparsity
+lambda_results <- find_lambda_by_sparsity(s, lambda_grid, desired_sparsity = 0.8)
+
+# Inspect the optimal lambda value and the sparsity levels for each lambda tested
+optimal_lambda <- lambda_results$best_lambda
+sparsity_levels <- lambda_results$actual_sparsity
+```
+
+## Parameter Selection Tips
+
+When selecting parameters for `generate_sparse_cov_matrix`, consider the following guidelines based on the matrix dimension (`n`):
+
+- For smaller dimensions (e.g., `n` around 50), the `scale_power` parameter can be set lower, such as around 0.8.
+- For larger dimensions (e.g., `n` equals 1000), `scale_power` can be increased to 1.2. Since the fitting changes with the expansion of `n`, 1.5 is the upper limit and should not be exceeded.
+- Regarding sparsity, the sparsity coefficient `sparse_rho` should vary inversely with `scale_power`. For example, if `scale_power` is 0.8, `sparse_rho` can be set to 0.4; if `scale_power` is 1.2, `sparse_rho` can be reduced to 0.1. Adjust according to the specific matrix form.
+
+For `glarma`, the `mtol` parameter, which controls the overall matrix convergence difference, typically does not need adjustment. The number of iterations usually does not reach the maximum, and convergence generally occurs within 20 iterations. The critical aspect is the adjustment of `ltol`. It is recommended to decrease `ltol` as the matrix size increases. For instance, when `n` is 20, `ltol` can be set to 1e-5; when `n` is 1000, it should be set to 1e-7. This is because `ltol` is the convergence condition for each column; if `n` is too large and `ltol` is not sufficiently reduced, the final results can vary significantly.
+
+## Advanced Features
+
+The `Glarmadillo` package excels in handling sparse covariance matrices, particularly for sizes up to `p=600`. By leveraging the Armadillo library, the package offers a robust solution to the Graphical Lasso problem, ensuring efficient performance and accurate results. It can handle dimensions up to `p=1000`, although computational efficiency at this scale may require further improvement.
+
+In addition to `generate_sparse_cov_matrix`, `Glarmadillo` also features `generate_specific_shape_sparse_cov_matrix`. This function enables the generation of covariance matrices with a user-defined shape, controlled by a shape matrix `M`. By providing flexibility in defining the structure of the covariance matrix, this function extends the package's utility in simulations and analyses where specific covariance patterns are desired. It allows for the creation of data matrices (Y) reflecting complex relationships defined by the shape matrix, making it an invaluable tool for testing statistical methods in scenarios with known covariance structures.
+
+As for its core functionality, `Glarmadillo` now includes the `find_lambda_by_sparsity` function. This new feature allows users to conduct a grid search for the optimal lambda value based on a desired sparsity level in the precision matrix. This function is particularly useful for scenarios where users have specific requirements for the sparsity of the graphical model, allowing for more tailored regularization.
+
+## Conclusion
+
+In summary, `Glarmadillo` stands out as a specialized R package for statistical learning and network analysis. It brings the power of the Armadillo library to R, enabling users to perform Graphical Lasso with an emphasis on handling sparse data structures. The package's functions, including `generate_sparse_cov_matrix` and `generate_specific_shape_sparse_cov_matrix`, are designed with user experience in mind, providing flexibility, ease of use, and comprehensive documentation that guides through their application. Whether for academic research or industry applications, `Glarmadillo` offers a reliable foundation for inverse covariance matrix estimation in complex datasets.With the introduction of `find_lambda_by_sparsity`, `Glarmadillo` enhances its capability as a specialized R package for statistical learning and network analysis. This new function, alongside the existing tools for generating and handling sparse covariance matrices, provides users with a comprehensive toolkit for inverse covariance matrix estimation in complex datasets. Whether for academic research or industry applications, `Glarmadillo` offers reliable and user-friendly solutions, now with added flexibility in lambda selection based on sparsity considerations.
+
+## License
+
+This package is free and open-source software licensed under the GNU General Public License version 3 (GPL-3)

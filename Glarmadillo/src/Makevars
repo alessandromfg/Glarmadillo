@@ -1,0 +1,8 @@
+# 使用 C++11 标准
+# CXX_STD = CXX11
+
+# 基本的编译器标志
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+
+# 基本的链接器标志，包括链接到 Rcpp、RcppArmadillo 以及可能需要的 LAPACK 和 BLAS
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS)
